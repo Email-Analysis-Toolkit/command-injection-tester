@@ -315,7 +315,7 @@ def parse_args():
     parser.add_argument('--quiet', '-q', action='store_true')
     parser.add_argument("--logdir", "-l", help="Path to log directory, defaults to ./logs", type=str)
     parser.add_argument("--comment", "-c", help="Comment to include in test commands", type=str)
-    parser.add_argument("--timeout", "-t", help=f"Timeout for sockets, defaults to {DEFAULT_TIMEOUT}s", type=int)
+    parser.add_argument("--timeout", "-t", help=f"Timeout for sockets, defaults to {DEFAULT_TIMEOUT}s", type=float)
     parser.add_argument("--nocolor", help=f"Deactivate color highlighting", action="store_true")
 
     args = parser.parse_args(sys.argv[1:])
