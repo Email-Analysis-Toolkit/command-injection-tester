@@ -1,21 +1,44 @@
-# EAST
+# Command Injection Tester
 
-This repository contains artifacts for the USENIX paper "Why TLS is better without STARTTLS: A Security Analysis of STARTTLS in the Email Context" by Damian Poddebniak¹, Fabian Ising¹, Hanno Böck², and Sebastian Schinzel¹. Very similar versions of the Command Injection Tester and the Fake Mail Server were peer reviewed in the USENIX'21 Call for Artifacts.
+The `command_injection_tester.py` script allows for straightforward testing of email servers for the command injection vulnerability in SMTP, POP3, and IMAP. 
 
-¹ Münster University of Applied Sciences        ² Independent Researcher
+## Usage
 
-More information about our STARTTLS research can be found here:
+The command
 
- * https://nostarttls.secvuln.info/
+`python3 command_injection_tester.py --imap --pop3 --smtp <hostname>`
 
-## Contents of this Repository
+tests `<hostname>` for the command injection in IMAP, POP3, and SMTP.
 
-We provide three components, each of which comes with its own README in the corresponding folder.
+## Parameters
 
-1. The Fake Mail Server, a custom-built and configurable SMTP, POP3, and IMAP server. The Fake Mail Server was instrumental in the client evaluation part of our paper.
-2. The Command Injection Tester, a Python Script for testing SMTP, POP3, and IMAP servers for the [command injection vulnerability](https://www.postfix.org/CVE-2011-0411.html) in STARTTLS.
-3. Scanning Scripts, which were used to perform IPv4-Internet scans for servers vulnerable to the Command Injection issue.
+* `--help` (`-h`): Print help message.
+* `--imap`: Use the IMAP protocol
+* `--pop3`: Use the POP3 protocol
+* `--smtp`: Use the SMTP protocol
+* `--imap-port` (`-i`): IMAP port to check (default: 143)
+* `--pop3-port` (`-p`): POP3 port to check (default: 110)
+* `--smtp-port` (`-s`): SMTP port to check (default: 587)
+* `--quiet` (`-q`): Be less verbose
+* `--timeout` (`-t`): Timeout in seconds to use for network sockets. Increase in case of problems (default: 2)
+* `--logdir` (`-l`): Path to log directory (default: `./logs`)
 
-## Virtual Machine for Client Testing
+## Example:
 
-In addition to the provided code, we provided a Ubuntu-based VirtualBox VM as a GitHub release to ease client testing. This Virtual Machine contains a nested QEMU Virtual Machine with the Thunderbird Version tested in the paper. For further information see the GitHub releases.
+The Command Injection Tester can best be tested using the Fake Mail Server:
+
+1. Start the `Fake Mail Server`:
+
+```sh
+$ sudo ./fake_mail_server setup
+```
+
+2. Run the `buftest.py` script against the server:
+
+```sh
+$ python3 command_injection_tester.py --imap --pop3 --smtp localhost
+```
+
+3. Since the Fake Mail Server is intentionally vulnerable against the command injection, you should see `Command injection here!` after every protocol test.
+
+Testing live servers should be just as easy. If connections keep timing out/the sanity test keeps failing, try increasing the timeout using the `--timeout` parameter.
