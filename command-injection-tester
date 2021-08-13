@@ -130,26 +130,26 @@ class ServerTest:
                             log_trace(logger, payload, incoming=False)
                             resp = self.recv_from_ssl(ssock)
                             log_trace(logger, resp, incoming=True)
-                except socket.timeout as e:
+                except socket.timeout:
                     msg = f"Sanity test failed. The connection to {self.hostname}:{self.port} timed out."
                     logger.error(red(msg))
                     return False
-                except ssl.SSLError as e:
+                except ssl.SSLError:
                     msg = f"Sanity test failed. Could not perform TLS handshake with {self.hostname}:{self.port}."
                     logger.error(red(msg))
                     return False
                 else:
                     logger.info(green("Sanity test done"))
                     return True
-        except socket.timeout as e:
+        except socket.timeout:
             msg = f"Sanity test failed. The connection to {self.hostname}:{self.port} ran into a timeout."
             logger.error(red(msg))
             return False
-        except ConnectionRefusedError as e:
+        except ConnectionRefusedError:
             msg = f"Sanity test failed. The connection to {self.hostname}:{self.port} was refused."
             logger.error(red(msg))
             return False
-        except OSError as e:
+        except OSError:
             msg = f"Sanity test failed. The connection to {self.hostname}:{self.port} ran into an error."
             logger.exception(red(msg))
             return False
@@ -205,26 +205,26 @@ class ServerTest:
                                         logger.info(green("Probably no command injection here!"))
                                 else:
                                     raise Exception
-                            except Exception as e:
-                                msg = f"Server unresponsive: Possible command injection here!\nFurther analysis needed."
+                            except Exception:
+                                msg = "Server unresponsive: Possible command injection here!\nFurther analysis needed."
                                 logger.warning(red(msg))
 
-                except OSError as e:
+                except OSError:
                     logger.info(green("TLS handshake failed - Server probably closed the connection!"))
 
-        except ConnectionRefusedError as e:
+        except ConnectionRefusedError:
             msg = f"Injection test failed. The connection to {self.hostname}:{self.port} was refused."
             logger.error(red(msg))
             return
 
-        except OSError as e:
+        except OSError:
             msg = f"Injection test failed. The connection to {self.hostname}:{self.port} ran into an error."
             logger.exception(red(msg))
             return False
 
     def test_imap_server(self, logger: logging.Logger, context: ssl.SSLContext):
         result = self._sanity_test(logger=logger, context=context,
-                                   pretls=[f"A STARTTLS\r\n"],
+                                   pretls=["A STARTTLS\r\n"],
                                    posttls=["B LOGOUT\r\n"])
 
         if result:
@@ -236,11 +236,11 @@ class ServerTest:
 
     def test_pop3_server(self, logger: logging.Logger, context: ssl.SSLContext):
         result = self._sanity_test(logger=logger, context=context,
-                                   pretls=[f"STLS\r\n"],
+                                   pretls=["STLS\r\n"],
                                    posttls=["QUIT\r\n"])
         if result:
             self._injection_test(logger=logger, context=context,
-                                 pretls=[f"STLS\r\nCAPA\r\n"],
+                                 pretls=["STLS\r\nCAPA\r\n"],
                                  command="USER user\r\n",
                                  test=lambda r: b"TOP" in r or b"-ERR" in r)
 
@@ -250,7 +250,7 @@ class ServerTest:
                                    posttls=["QUIT\r\n"])
         if result:
             self._injection_test(logger=logger, context=context,
-                                 pretls=[f"EHLO {self.comment}\r\n", f"STARTTLS\r\nEHLO commandinjectiontester\r\n"],
+                                 pretls=[f"EHLO {self.comment}\r\n", "STARTTLS\r\nEHLO commandinjectiontester\r\n"],
                                  command=f"FAKE {self.comment}\r\n",
                                  test=lambda r: b"250" in r)
 
@@ -315,7 +315,7 @@ def parse_args():
     parser.add_argument("--logdir", "-l", help="Path to log directory, defaults to ./logs", type=str)
     parser.add_argument("--comment", "-c", help="Comment to include in test commands", type=str)
     parser.add_argument("--timeout", "-t", help=f"Timeout for sockets, defaults to {DEFAULT_TIMEOUT}s", type=float)
-    parser.add_argument("--nocolor", help=f"Deactivate color highlighting", action="store_true")
+    parser.add_argument("--nocolor", help="Deactivate color highlighting", action="store_true")
 
     args = parser.parse_args(sys.argv[1:])
 
