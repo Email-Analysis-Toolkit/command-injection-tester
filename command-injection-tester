@@ -16,7 +16,7 @@ import logging
 import argparse
 from enum import Enum
 from pathlib import Path
-import random
+import secrets
 from typing import Callable, Union
 
 Protocol = Enum("Protocol", ("IMAP", "POP3", "SMTP"))
@@ -299,7 +299,7 @@ def get_ssl_context() -> ssl.SSLContext:
 
 
 def get_random_tag() -> str:
-    return "".join(random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ") for _ in range(5))
+    return "".join(secrets.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ") for _ in range(5))
 
 
 def parse_args():
