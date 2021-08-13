@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # Copyright © 2021 FH Münster
 # Developed by Samson Umezulike and Fabian Ising
@@ -150,7 +149,7 @@ class ServerTest:
             msg = f"Sanity test failed. The connection to {self.hostname}:{self.port} was refused."
             logger.error(red(msg))
             return False
-        except socket.error as e:
+        except OSError as e:
             msg = f"Sanity test failed. The connection to {self.hostname}:{self.port} ran into an error."
             logger.exception(red(msg))
             return False
@@ -218,7 +217,7 @@ class ServerTest:
             logger.error(red(msg))
             return
 
-        except socket.error as e:
+        except OSError as e:
             msg = f"Injection test failed. The connection to {self.hostname}:{self.port} ran into an error."
             logger.exception(red(msg))
             return False
