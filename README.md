@@ -1,12 +1,12 @@
 # Command Injection Tester
 
-The `command_injection_tester.py` script allows for straightforward testing of email servers for the STARTTLS command injection vulnerability in SMTP, POP3, and IMAP. 
+The `command-injection-tester` script allows for straightforward testing of email servers for the STARTTLS command injection vulnerability in SMTP, POP3, and IMAP. 
 
 ## Usage
 
 The command
 
-`python3 command_injection_tester.py --imap --pop3 --smtp <hostname>`
+`python3 command-injection-tester --imap --pop3 --smtp <hostname>`
 
 tests `<hostname>` for the command injection in IMAP, POP3, and SMTP.
 
@@ -25,7 +25,7 @@ tests `<hostname>` for the command injection in IMAP, POP3, and SMTP.
 
 ## Example:
 
-The Command Injection Tester can best be tested using the Fake Mail Server:
+The Command Injection Tester can best be tested using the (https://github.com/Email-Analysis-Toolkit/fake-mail-server)[Fake Mail Server]:
 
 1. Start the `Fake Mail Server`:
 
@@ -33,10 +33,10 @@ The Command Injection Tester can best be tested using the Fake Mail Server:
 $ sudo ./fake_mail_server setup
 ```
 
-2. Run the `buftest.py` script against the server:
+2. Run this script against the server:
 
 ```sh
-$ python3 command_injection_tester.py --imap --pop3 --smtp localhost
+$ python3 command-injection-tester --imap --pop3 --smtp localhost
 ```
 
 3. Since the Fake Mail Server is intentionally vulnerable against the command injection, you should see `Command injection here!` after every protocol test.
