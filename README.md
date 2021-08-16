@@ -25,7 +25,7 @@ tests `<hostname>` for the command injection in IMAP, POP3, and SMTP.
 
 ## Example:
 
-The Command Injection Tester can best be tested using the (https://github.com/Email-Analysis-Toolkit/fake-mail-server)[Fake Mail Server]:
+The Command Injection Tester can best be tested using the [Fake Mail Server](https://github.com/Email-Analysis-Toolkit/fake-mail-server):
 
 1. Start the `Fake Mail Server`:
 
