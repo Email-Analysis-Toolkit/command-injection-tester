@@ -19,7 +19,7 @@ setuptools.setup(
     author="Samson Umezulike, Fabian Ising, Damian Poddebniak, Hanno Böck",
     url='https://nostarttls.secvuln.info/',
     packages=[],
-    scripts=['vacdec'],
+    scripts=['command-injection-tester'],
     python_requires='>=3',
     install_requires=[],
     license="MIT",
