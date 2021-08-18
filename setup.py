@@ -12,7 +12,7 @@ f.close()
 
 setuptools.setup(
     name=package_name,
-    version="0.0.1",
+    version="0.0.2",
     description="Testing servers for STARTTLS command injection vulnerability",
     long_description=readme,
     long_description_content_type='text/markdown',
