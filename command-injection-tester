@@ -62,7 +62,7 @@ class ServerTest:
         sock.setblocking(False)
         data = b""
         while True:
-            r, w, _ = select.select([sock], [], [], self.timeout)
+            r, _, _ = select.select([sock], [], [], self.timeout)
             if sock in r:
                 try:
                     new_data = sock.recv(1024)
@@ -90,7 +90,7 @@ class ServerTest:
         count = 0
         while count < limit:
             try:
-                r, w, e = select.select([sock], [], [], self.timeout)
+                r, _, _ = select.select([sock], [], [], self.timeout)
                 if sock in r:
                     resp += sock.recv(1024)
                     count += 1
