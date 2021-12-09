@@ -302,9 +302,9 @@ def get_random_tag() -> str:
 def parse_args():
     parser = argparse.ArgumentParser(description='Check a server for the STARTTLS command injection bug')
     parser.add_argument("hostname", help="Host to check", type=str)
-    parser.add_argument("--imap-port", "-i", help="IMAP Port to check", type=int)
-    parser.add_argument("--pop3-port", "-p", help="POP3 Port to check", type=int)
-    parser.add_argument("--smtp-port", "-s", help="SMTP Port to check", type=int)
+    parser.add_argument("--imap-port", "-i", help="IMAP Port to check (default: 143)", type=int)
+    parser.add_argument("--pop3-port", "-p", help="POP3 Port to check (default: 110)", type=int)
+    parser.add_argument("--smtp-port", "-s", help="SMTP Port to check (default: 587)", type=int)
     parser.add_argument("--imap", help="Use the IMAP protocol", action="store_const", const=Protocol.IMAP)
     parser.add_argument("--pop3", help="Use the POP3 protocol", action="store_const", const=Protocol.POP3)
     parser.add_argument("--smtp", help="Use the SMTP protocol", action="store_const", const=Protocol.SMTP)
