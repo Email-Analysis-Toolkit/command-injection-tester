@@ -16,13 +16,18 @@ from pathlib import Path
 import secrets
 from typing import Callable, Union
 
-Protocol = Enum("Protocol", ("IMAP", "POP3", "SMTP"))
+Protocol = Enum("Protocol", ("IMAP", "POP3", "SMTP", "MANAGESIEVE"))
 
 # We need a custom TRACE level for logging
 TRACE = 15
 logging.addLevelName(TRACE, "TRACE")
 
-default_ports = {Protocol.IMAP: 143, Protocol.POP3: 110, Protocol.SMTP: 587}
+default_ports = {
+    Protocol.IMAP: 143,
+    Protocol.POP3: 110,
+    Protocol.SMTP: 587,
+    Protocol.MANAGESIEVE: 4190,
+}
 
 DEFAULT_LOGDIR = "./logs"
 DEFAULT_COMMENT = "commandinjectiontester"
@@ -299,6 +304,24 @@ class ServerTest:
                 test=lambda r: b"250" in r,
             )
 
+    def test_managesieve_server(self, logger: logging.Logger, context: ssl.SSLContext):
+        result = self._sanity_test(
+            logger=logger,
+            context=context,
+            pretls=["STARTTLS\r\n"],
+            posttls=["LOGOUT\r\n"],
+        )
+
+        if result:
+            injection_tag = get_random_tag()
+            self._injection_test(
+                logger=logger,
+                context=context,
+                pretls=[f"STARTTLS\r\nNOOP\r\n"],
+                command="NOOP\r\n",
+                test=lambda r: "ok" in r.lower(),
+            )
+
     def test_server(self):
         logger = self.get_logger()
         context = get_ssl_context()
@@ -313,6 +336,7 @@ class ServerTest:
             Protocol.IMAP: self.test_imap_server,
             Protocol.SMTP: self.test_smtp_server,
             Protocol.POP3: self.test_pop3_server,
+            Protocol.MANAGESIEVE: self.test_managesieve_server,
         }.get(self.protocol)(logger, context)
 
     def get_logger(self) -> logging.Logger:
@@ -378,6 +402,12 @@ def parse_args():
         "--smtp-port", "-s", help="SMTP Port to check (default: 587)", type=int
     )
     parser.add_argument(
+        "--managesieve-port",
+        "-m",
+        help="MANAGESIEVE Port to check (default: 4190)",
+        type=int,
+    )
+    parser.add_argument(
         "--imap",
         help="Use the IMAP protocol",
         action="store_const",
@@ -394,6 +424,12 @@ def parse_args():
         help="Use the SMTP protocol",
         action="store_const",
         const=Protocol.SMTP,
+    )
+    parser.add_argument(
+        "--managesieve",
+        help="Use the MANAGESIEVE protocol",
+        action="store_const",
+        const=Protocol.MANAGESIEVE,
     )
     parser.add_argument("--quiet", "-q", action="store_true")
     parser.add_argument(
@@ -414,11 +450,11 @@ def parse_args():
 
     args = parser.parse_args(sys.argv[1:])
 
-    protocols = list(filter(None, [args.imap, args.pop3, args.smtp]))
+    protocols = list(filter(None, [args.imap, args.pop3, args.smtp, args.managesieve]))
     logging_level = logging.INFO if args.quiet else logging.DEBUG
 
     if not protocols:
-        print("At least one of --imap, --pop3, --smtp is required")
+        print("At least one of --imap, --pop3, --smtp, --managesieve is required")
 
     if args.nocolor:
         global red, green
@@ -432,6 +468,8 @@ def parse_args():
             port = args.pop3_port
         elif protocol == Protocol.SMTP:
             port = args.smtp_port
+        elif protocol == Protocol.MANAGESIEVE:
+            port = args.managesieve_port
         st = ServerTest(
             protocol=protocol,
             logging_level=logging_level,
